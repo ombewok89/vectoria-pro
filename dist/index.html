@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f5fa">
+<meta name="description" content="Ubah JPG, PNG dan gambar lain menjadi SVG dan EPS yang bisa diedit, langsung di HP.">
+<meta name="vektora-app" content="converter">
+<title>Vektora Studio — Konverter gambar ke vektor</title>
+<link rel="icon" href="assets/vektora-192.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/vektora-apple-180.png">
+<link rel="manifest" href="app.webmanifest?v=6">
+<meta name="apple-mobile-web-app-title" content="Vektora">
+<script type="module" src="pwa.mjs?v=1"></script>
+<link rel="stylesheet" href="converter.css?v=23">
+<script type="module" src="converter.mjs?v=34"></script>
+</head>
+<body>
+<header class="header"><div class="header-inner">
+  <a href="./" class="brand"><img src="assets/vektora-192.png" alt="" width="35" height="35"><span>Vektora <small>STUDIO</small></span></a>
+  <div class="header-actions">
+    <button type="button" class="button install-button" id="installApp" data-icon="download" hidden>Pasang<span class="sr"> Vektora Studio</span></button>
+    <button type="button" class="icon top-help" id="help" data-icon="help" aria-label="Panduan"></button>
+  </div>
+</div></header>
+<aside class="app-dock" aria-label="Alat dan tindakan studio">
+  <nav class="main-nav" aria-label="Studio">
+    <button class="nav-link" data-studio="vector" aria-pressed="true" data-icon="vector">Vektor</button>
+    <button class="nav-link" data-studio="upscale" aria-pressed="false" data-icon="maximize">Perbesar</button>
+    <button class="nav-link" data-studio="pattern" aria-pressed="false" data-icon="pattern">Pola</button>
+    <button class="nav-link" data-studio="gradient" aria-pressed="false" data-icon="gradient">Gradien</button>
+    <a class="nav-link editor-link" href="editor.html" data-icon="pencil">Editor</a>
+  </nav>
+  <div class="dock-actions" id="vectorActions">
+    <button id="run" class="button primary run" type="button" data-icon="spark" disabled>Buat vektor</button>
+    <button id="download" class="button primary" data-icon="download" disabled>Unduh</button>
+  </div>
+  <div class="dock-actions" id="utilityActions" hidden>
+    <button id="utilityRun" class="button primary run" data-icon="spark">Buat hasil</button>
+    <button id="utilityDownload" class="button primary" data-icon="download" disabled>Unduh</button>
+  </div>
+</aside>
+<main id="vector" class="page">
+  <section class="intro">
+    <h1>Gambar jadi <em>vektor.</em></h1>
+    <p>Ubah JPG, PNG, dan gambar lain menjadi SVG atau EPS yang bisa diedit. Atur detailnya, bandingkan hasilnya, lalu unduh.</p>
+  </section>
+  <div class="workspace">
+    <div class="sidebar">
+      <section class="card upload-card" aria-labelledby="inputTitle">
+        <div class="card-head"><h2 id="inputTitle">Gambar sumber</h2><button class="link-btn" id="sample">Coba contoh</button></div>
+        <button id="drop" class="drop" type="button">
+          <span class="upload-icon" data-icon="upload"></span>
+          <strong>Pilih gambar</strong>
+          <span>atau seret file ke sini</span>
+          <small>JPG, PNG, WebP, BMP, GIF, AVIF · 20 MB/file · maks. 200 gambar</small>
+        </button>
+        <input id="file" type="file" accept=".jpg,.jpeg,.png,.webp,.bmp,.gif,.avif,image/jpeg,image/png,image/webp,image/bmp,image/gif,image/avif" multiple hidden>
+        <div id="fileInfo" class="file-info" hidden><span class="file-icon" data-icon="image"></span><div><strong id="fileName"></strong><small id="fileSize"></small></div></div>
+        <div id="queueBox" class="queue-box" hidden><label for="queue">Pratinjau file</label><select id="queue"></select><button id="batchDownload" class="button outline" disabled data-icon="download">Unduh semua SVG (.zip)</button></div>
+      </section>
+      <section class="card settings" aria-labelledby="settingsTitle">
+        <div class="card-head"><h2 id="settingsTitle">Pengaturan hasil</h2><span class="head-icon" data-icon="sliders"></span></div>
+        <div class="segment mode" aria-label="Mode warna"><button type="button" data-mode="color" aria-pressed="true" data-icon="palette">Warna</button><button type="button" data-mode="mono" aria-pressed="false" data-icon="contrast">Monokrom</button></div>
+        <label id="profileControl" class="stack">Gaya pelacakan<select id="traceProfile"><option value="auto">Otomatis · kurva halus</option><option value="exact">Presisi piksel · warna &amp; bentuk asli</option><option value="flat">Logo dan ikon datar</option><option value="gradient">Ilustrasi 3D dan gradasi</option></select></label>
+        <p id="exactHelp" class="setting-note" hidden>Mempertahankan kisi piksel dan warna sumber. Jika sumber berpiksel, kotaknya tetap terlihat saat diperbesar. Gunakan Otomatis untuk tepi halus.</p>
+        <div id="detailControl" class="control"><label for="detail">Detail bentuk</label><output id="detailOut" for="detail">Seimbang</output><input id="detail" type="range" min="0" max="4" value="2"><div class="range-ends"><span>Sederhana</span><span>Sangat detail</span></div></div>
+        <label id="hdControl" class="quality-option"><input id="traceHD" type="checkbox" checked><span><strong>Trace HD</strong><small>Detail kontur lebih rapat. Pada gradasi 3D, tepi diperjelas dengan sampel hingga 2×.</small></span></label>
+        <label id="smoothControl" class="quality-option"><input id="smoothCurves" type="checkbox" checked><span><strong>Kurva halus</strong><small>Haluskan tepi dan rapatkan batas antarwarna.</small></span></label>
+        <div id="monoControls" class="stack" hidden>
+          <label class="stack">Tampilan monokrom<select id="monoStyle"><option value="auto">Otomatis</option><option value="tone">Gradasi abu-abu · 3D</option><option value="ink">Siluet hitam-putih</option></select></label>
+          <p id="monoToneHelp" class="setting-note" hidden>Mempertahankan volume, bayangan, dan latar gambar tanpa transparansi. Aktifkan Trace HD untuk tepi yang lebih tajam.</p>
+          <label class="stack" id="monoPolarityControl">Bagian yang dijadikan hitam<select id="monoPolarity"><option value="dark">Bagian gelap</option><option value="light">Bagian terang</option></select></label>
+          <label class="stack" id="monoBackgroundControl">Latar monokrom<select id="monoBackground"><option value="white">Putih</option><option value="transparent">Transparan</option></select></label>
+          <label class="check" id="monoAutoControl"><input id="monoAuto" type="checkbox" checked> Ambang otomatis</label>
+          <div id="thresholdControl" class="control" hidden><label for="threshold">Ambang monokrom</label><output id="thresholdOut" for="threshold">155</output><input id="threshold" type="range" min="1" max="255" value="155"></div>
+        </div>
+        <details id="advanced"><summary>Pengaturan lanjutan <span data-icon="chevron"></span></summary>
+          <div id="colorControls" class="control"><label for="colors">Palet dasar</label><output id="colorsOut" for="colors">12</output><input id="colors" type="range" min="2" max="32" value="12"></div>
+          <div class="control"><label for="noise">Bersihkan bintik</label><output id="noiseOut" for="noise">2</output><input id="noise" type="range" min="0" max="5" value="2"></div>
+          <label id="removeWhiteControl" class="check"><input id="removeWhite" type="checkbox"><span>Hapus latar putih atau krem</span></label>
+        </details>
+
+        <button id="cancel" class="link-btn cancel" type="button" hidden>Batalkan proses</button>
+        <div id="progressBox" class="progress" hidden><progress id="progress" max="1" value="0"></progress></div>
+      </section>
+    </div>
+    <section class="card visual" aria-labelledby="previewTitle">
+      <div class="preview-head">
+        <div><h2 id="previewTitle">Pratinjau</h2><p id="status" role="status">Memuat gambar contoh…</p></div>
+        <div class="zoom" aria-label="Pembesaran"><button id="zoomOut" class="icon" data-icon="zoomOut" aria-label="Perkecil"></button><select id="zoomLevel" aria-label="Tingkat pembesaran"><option value="1">100%</option><option value="1.5">150%</option><option value="2">200%</option><option value="3">300%</option><option value="4">400%</option><option value="6">600%</option><option value="8">800%</option></select><button id="zoomIn" class="icon" data-icon="zoomIn" aria-label="Perbesar"></button></div>
+      </div>
+      <div id="canvas" class="canvas" data-view="compare">
+        <div id="art" class="art" hidden>
+          <img id="original" alt="Gambar sumber">
+          <div id="result" role="img" aria-label="Hasil vektor" hidden></div>
+          <svg id="sliceOverlay" aria-hidden="true" hidden></svg>
+        </div>
+        <div class="canvas-empty" id="empty" hidden data-icon="image"><p>Pratinjau tampil setelah gambar dipilih.</p></div>
+        <span class="canvas-label source-label" id="sourceLabel" hidden>Asli</span><span class="canvas-label vector-label" id="vectorLabel" hidden>Vektor</span>
+        <div id="splitLine" class="split-line" hidden><span data-icon="compare"></span></div>
+        <input id="compareRange" class="compare-range" type="range" min="0" max="100" value="50" aria-label="Geser untuk membandingkan gambar asli dan vektor" hidden>
+      </div>
+      <div class="preview-bottom">
+        <div class="segment view-mode" aria-label="Tampilan pratinjau">
+          <button data-view="compare" aria-pressed="true" data-icon="compare">Bandingkan</button>
+          <button data-view="result" aria-pressed="false" data-icon="vector">Vektor</button>
+          <button data-view="outline" aria-pressed="false" data-icon="outline">Kontur</button>
+        </div>
+        <div class="metrics" id="metrics" hidden><span><strong id="objects">0</strong> bentuk</span><span><strong id="points">0</strong> titik</span><span><strong id="svgSize">0</strong> SVG</span></div>
+      </div>
+      <div class="export-panel">
+        <div class="export-controls">
+          <label id="stockSettings" class="stock-option"><input id="stock" type="checkbox" checked><span><strong>Artboard Adobe Stock</strong><small id="dimensions">16 MP · proporsi asli</small></span></label>
+          <label class="export-field">Format<select id="format"><option>SVG</option><option>SVG ZIP</option><option>EPS</option><option>PDF</option><option>PNG</option><option>JPG</option></select></label>
+          <label class="export-field" id="rasterSettings" hidden>Resolusi<select id="rasterSize"><option value="1920">Full HD · 1.920 px</option><option value="2560">QHD · 2.560 px</option><option value="4096" selected>Hingga 4K · maks. 16 MP</option><option value="native">Ukuran sumber · maks. 4K</option></select><small id="rasterDimensions">Sisi terpanjang</small></label>
+        </div>
+        <details id="slice" hidden><summary>Pisahkan lembar ikon <span data-icon="chevron"></span></summary>
+          <p>Temukan ikon berdasarkan jarak antarikon. Gunakan kisi manual jika ikon saling menempel.</p>
+          <div class="slice-fields">
+            <label>Metode<select id="sliceMethod"><option value="auto">Otomatis</option><option value="grid">Kisi manual</option></select></label>
+            <div class="slice-fields" id="gridFields" hidden>
+              <label>Kolom<input id="columns" type="number" min="1" max="20" value="10"></label>
+              <label>Baris<input id="rows" type="number" min="1" max="20" value="10"></label>
+            </div>
+            <label>Format<select id="sliceFormat"><option value="SVG">SVG tajam</option><option value="PNG">PNG · 1.024 px</option></select></label>
+            <label>Latar ikon<select id="sliceBackground"><option value="transparent">Transparan</option><option value="white">Putih</option><option value="source">Ikuti gambar sumber</option></select></label>
+          </div>
+          <label id="sliceShow" class="check" hidden><input id="sliceShowBoxes" type="checkbox" checked> Tampilkan posisi ikon pada pratinjau</label>
+          <p id="sliceStatus" role="status">Pindai lembar untuk memastikan jumlah ikon.</p>
+          <div class="slice-fields">
+            <button type="button" id="sliceScan" class="button outline" data-icon="grid">Pindai ikon</button>
+            <button type="button" id="sliceDownload" class="button outline" data-icon="download" disabled>Unduh semua ikon (ZIP)</button>
+            <button type="button" id="sliceCancel" class="link-btn" hidden>Batalkan</button>
+            <progress id="sliceProgress" max="1" value="0" hidden></progress>
+          </div>
+        </details>
+      </div>
+    </section>
+  </div>
+</main>
+<main id="utility" class="page" hidden>
+  <section class="intro"><h1 id="utilityTitle"></h1><p id="utilityDescription"></p></section>
+  <div class="workspace">
+    <section class="card settings utility-controls"><div class="card-head"><h2>Pengaturan</h2><span class="head-icon" data-icon="sliders"></span></div>
+      <button id="utilityChoose" class="drop" data-icon="upload"><strong>Pilih gambar</strong><span>Maks. 200 gambar · 20 MB per file</span></button>
+      <input id="utilityFile" type="file" multiple accept=".jpg,.jpeg,.png,.webp,.bmp,.gif,.avif,image/jpeg,image/png,image/webp,image/bmp,image/gif,image/avif" hidden>
+      <button class="link-btn utility-sample" id="utilitySample">Gunakan contoh</button>
+      <div id="utilityQueueBox" class="queue-box" hidden>
+        <label for="utilityQueue">Gambar dalam antrean</label>
+        <select id="utilityQueue"></select>
+        <p id="utilityBatchStatus" class="muted" role="status"></p>
+        <progress id="utilityProgress" aria-label="Progres antrean gambar" max="1" hidden></progress>
+        <button type="button" id="utilityCancel" class="link-btn" hidden>Batalkan antrean</button>
+        <button type="button" id="utilityBatchDownload" class="button outline" data-icon="download" disabled>Unduh hasil (.zip)</button>
+      </div>
+      <div id="upscaleFields">
+        <label class="stack">Ukuran keluaran<select id="upscaleFactor"><option value="2">2× ukuran asli</option><option value="3">3× ukuran asli</option><option value="4">4× ukuran asli</option><option value="4k">Hingga 4K · maks. 16 MP</option><option value="stock">Minimal 4 MP</option></select></label>
+        <label class="check"><input id="sharpen" type="checkbox" checked> Pulihkan ketajaman tepi</label>
+        <p class="muted">Detail yang masih terlihat diperjelas. Detail yang sudah hilang dari sumber tetap terbatas.</p>
+      </div>
+      <div id="patternFields" hidden><label class="stack">Susunan pola<select id="patternStyle"><option value="mirror">Cermin empat arah</option><option value="repeat">Ulangi kotak</option></select></label><p class="muted">Mode cermin menutup sambungan pada tepi ubin.</p></div>
+      <div id="gradientFields" hidden>
+        <label class="stack">Palet<select id="gradientPreset"><option value="dusk">Senja ungu</option><option value="sunrise">Fajar persik</option><option value="forest">Hutan berkabut</option><option value="ocean">Laut biru</option></select></label>
+        <div class="color-fields"><label class="stack">Warna 1<input id="gradientFirst" type="color"></label><label class="stack">Warna 2<input id="gradientSecond" type="color"></label></div>
+        <div class="control"><label for="grain">Tekstur</label><input id="grain" type="range" min="0" max="28" value="10"></div>
+        <label class="stack">Arah (derajat)<input id="angle" type="number" min="0" max="359" value="135"></label>
+        <label class="stack">Rasio<select id="gradientRatio"><option value="1">1:1 · Persegi</option><option value="0.5625">9:16 · Vertikal</option><option value="1.7777778">16:9 · Lanskap</option></select></label>
+      </div>
+
+    </section>
+    <section class="card visual"><div class="preview-head"><div><h2>Pratinjau hasil</h2><p id="utilityStatus" role="status"></p></div></div>
+      <div id="upscaleCompare" class="export-panel utility-export" hidden>
+        <label><span class="sr">Tampilan perbandingan</span><select id="upscalePreviewMode"><option value="compare">Before / After</option><option value="result">Hasil</option><option value="source">Gambar asli</option></select></label>
+        <label class="check"><input id="upscaleDetail" type="checkbox"> Detail tengah</label>
+      </div>
+      <div class="utility-preview"><canvas id="utilityCanvas" aria-label="Pratinjau hasil studio"></canvas></div>
+      <div id="upscaleSplit" class="upscale-split" hidden>
+        <span>Before · Asli</span>
+        <input id="upscaleSplitRange" type="range" min="0" max="100" value="50" aria-label="Geser batas antara gambar asli dan hasil upscale" disabled>
+        <span>After · Hasil</span>
+      </div>
+      <div class="export-panel utility-export"><label class="sr" for="utilityFormat">Format unduhan</label><select id="utilityFormat"><option>PNG</option><option>JPG</option><option id="videoOption" hidden value="VIDEO">Video loop</option></select></div>
+    </section>
+  </div>
+</main>
+<footer class="footer"><span data-icon="shield">Gambar diproses di perangkatmu.</span></footer>
+<dialog id="guide"><div class="card-head"><h2>Panduan Vektora</h2><button class="icon" id="closeGuide" aria-label="Tutup panduan" data-icon="close"></button></div><p>Pilih gambar, atur detail dan warna, lalu ketuk <strong>Buat vektor</strong>. Logo, ikon, dan ilustrasi warna datar biasanya menghasilkan kontur yang paling bersih.</p><p>Mode monokrom menyediakan gradasi abu-abu untuk ilustrasi 3D dan siluet hitam-putih. Untuk GIF, yang diproses adalah gambar yang didekode browser, biasanya frame pertama.</p><p>Unduh satu file SVG atau EPS untuk unggahan Adobe Stock. ZIP digunakan untuk mengambil banyak file sekaligus. Periksa detail dan hak penggunaan sebelum mengunggah.</p><p>Untuk membuka studio saat offline, jalankan situs sekali saat terhubung dan tunggu aset selesai disimpan di browser.</p></dialog>
+<div id="notice" role="alert" hidden></div>
+<dialog id="installHelp" aria-labelledby="installTitle">
+  <div class="card-head"><h2 id="installTitle">Pasang Vektora Studio</h2></div>
+  <p id="installApple" hidden>Di Safari, ketuk <strong>Bagikan</strong>, lalu pilih <strong>Tambahkan ke Layar Utama</strong>. Aktifkan <strong>Buka sebagai App Web</strong> jika tersedia, lalu ketuk <strong>Tambah</strong>.</p>
+  <p id="installBrowser" hidden>Buka menu browser dan pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>, jika tersedia.</p>
+  <form method="dialog"><button class="button primary" type="submit">Tutup</button></form>
+</dialog>
+</body>
+</html>

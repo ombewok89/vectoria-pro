@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7f6fb">
+<meta name="description" content="Editor vektor sentuh dengan ekspor SVG dan pemeriksaan aset untuk Adobe Stock.">
+<title>Vektora Studio — Editor vektor</title>
+<link rel="icon" href="assets/vektora-192.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/vektora-apple-180.png">
+<link rel="manifest" href="app.webmanifest?v=6">
+<meta name="apple-mobile-web-app-title" content="Vektora">
+<script type="module" src="pwa.mjs?v=1"></script>
+<link rel="stylesheet" href="style.css?v=8">
+<script type="module" src="editor.mjs?v=8"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="Vektora Studio"><img class="logo" src="assets/vektora-192.png" width="37" height="37" alt=""><span>Vektora<span class="brand-sub"> STUDIO</span></span></a>
+  <div class="project-head">
+    <button id="project" class="project" data-icon="folder"><span id="projectName">Botanical Study</span><span data-icon="chevron"></span></button>
+    <span id="saveState" class="saved" role="status"><i></i><span>Tersimpan di perangkat</span></span>
+  </div>
+  <div class="top-actions">
+    <button id="installApp" class="icon-btn" type="button" data-icon="download" aria-label="Pasang Vektora Studio" title="Pasang Vektora Studio" hidden></button>
+    <button id="help" class="icon-btn help" data-icon="help" aria-label="Panduan"></button>
+  </div>
+</header>
+<main class="layout">
+  <nav class="tools" aria-label="Alat gambar">
+    <span class="zone-label">ALAT</span>
+    <div id="toolList" class="tool-list"></div>
+    <div class="tool-divider"></div>
+    <div class="tool-history">
+      <button id="undo" class="tool" data-icon="undo" aria-label="Urungkan"><span>Urungkan</span></button>
+      <button id="redo" class="tool" data-icon="redo" aria-label="Ulangi"><span>Ulangi</span></button>
+    </div>
+    <button id="mobilePanel" class="tool mobile-only" data-icon="layers"><span>Panel</span></button>
+  </nav>
+  <section class="workspace" aria-label="Area gambar">
+    <div class="workspace-top">
+      <div class="section-title"><span class="square-icon" data-icon="artboard"></span><div><h1>Kanvas</h1><p id="sizeText">4000 × 4000 px</p></div></div>
+      <div class="canvas-actions"><button id="gridToggle" class="icon-btn" aria-label="Tampilkan kisi" aria-pressed="false" data-icon="grid"></button><button id="fit" class="icon-btn" aria-label="Paskan kanvas" data-icon="fit"></button></div>
+    </div>
+    <div id="stage" class="stage">
+      <div class="board-holder"><div class="board-shell"><svg id="board" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kanvas vektor interaktif"></svg></div></div>
+    </div>
+    <div class="workspace-foot">
+      <span id="hint" class="hint"></span>
+    <button id="export" class="primary" data-icon="download">Ekspor <span>SVG</span></button>
+      <div class="zoom" aria-label="Pembesaran"><button id="minus" class="icon-btn" data-icon="zoomOut" aria-label="Perkecil"></button><span id="zoomLabel">100%</span><button id="plus" class="icon-btn" data-icon="zoomIn" aria-label="Perbesar"></button></div>
+    </div>
+  </section>
+  <button class="panel-backdrop" id="panelBackdrop" aria-label="Tutup panel" hidden></button>
+  <aside class="panel" id="panel" aria-label="Panel proyek">
+    <div class="panel-top"><div class="section-title"><span class="square-icon" data-icon="layers"></span><div><h2>Panel proyek</h2><p>Atur dan periksa asetmu</p></div></div><button id="closePanel" class="icon-btn mobile-only" data-icon="close" aria-label="Tutup panel"></button></div>
+    <div class="tabs" role="tablist" aria-label="Panel proyek">
+      <button id="layerTab" data-tab="layers" role="tab" aria-controls="layers" data-icon="layers">Layer</button>
+      <button id="styleTab" data-tab="style" role="tab" aria-controls="style" data-icon="palette">Gaya</button>
+      <button id="stockTab" data-tab="stock" role="tab" aria-controls="stock" data-icon="shield">Stock</button>
+    </div>
+    <section id="layers" class="tab-body" role="tabpanel" aria-labelledby="layerTab"></section>
+    <section id="style" class="tab-body" role="tabpanel" aria-labelledby="styleTab"></section>
+    <section id="stock" class="tab-body" role="tabpanel" aria-labelledby="stockTab"></section>
+    <div class="panel-bottom"><button id="stockShortcut" class="stock-card" data-icon="shield"><span><strong>Cek Adobe Stock</strong><small id="stockSummary">Periksa syarat teknis SVG</small></span><span data-icon="right"></span></button></div>
+  </aside>
+</main>
+<dialog id="modal"><div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="icon-btn" data-icon="close" aria-label="Tutup"></button></div><div id="modalBody"></div></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+<input type="file" id="importProject" accept=".json,application/json" hidden>
+<dialog id="installHelp" aria-labelledby="installTitle">
+  <div class="modal-head"><h2 id="installTitle">Pasang Vektora Studio</h2></div>
+  <p id="installApple" hidden>Di Safari, ketuk <strong>Bagikan</strong>, lalu pilih <strong>Tambahkan ke Layar Utama</strong>. Aktifkan <strong>Buka sebagai App Web</strong> jika tersedia, lalu ketuk <strong>Tambah</strong>.</p>
+  <p id="installBrowser" hidden>Buka menu browser dan pilih <strong>Instal aplikasi</strong> atau <strong>Tambahkan ke layar utama</strong>, jika tersedia.</p>
+  <form method="dialog"><button class="primary" type="submit">Tutup</button></form>
+</dialog>
+</body>
+</html>

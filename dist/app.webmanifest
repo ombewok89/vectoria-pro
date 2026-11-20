@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Vektora Studio",
+  "short_name": "Vektora",
+  "description": "Konverter dan editor gambar vektor.",
+  "lang": "id",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5fa",
+  "theme_color": "#f6f5fa",
+  "icons": [
+    {"src": "assets/vektora-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "assets/vektora-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "assets/vektora-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
